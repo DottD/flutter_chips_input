@@ -244,6 +244,18 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
     }
   }
 
+  void updateChip(T oldData, T data) {
+    if (widget.enabled) {
+      setState(() {
+        _chips.remove(oldData);
+        _chips.add(data);
+        _updateTextInputState();
+      });
+      _initFocusNode();
+      widget.onChanged(_chips.toList(growable: false));
+    }
+  }
+
   void _openInputConnection() {
     if (!_hasInputConnection) {
       _connection = TextInput.attach(
