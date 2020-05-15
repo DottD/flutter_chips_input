@@ -77,6 +77,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
   LayerLink _layerLink = LayerLink();
   Size size;
   TextOverflow textOverflow;
+  bool _previousEnabled;
 
   ChipsInputState(TextOverflow textOverflow) {
     this.textOverflow = textOverflow;
@@ -99,6 +100,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initOverlayEntry();
     });
+    this._previousEnabled = widget.enabled;
   }
 
   _initFocusNode() {
@@ -278,6 +280,11 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
 
   @override
   Widget build(BuildContext context) {
+    if (this._previousEnabled != widget.enabled) {
+      this._initFocusNode();
+      this._previousEnabled = widget.enabled;
+    }
+
     var chipsChildren = _chips
         .map<Widget>((data) => widget.chipBuilder(context, this, data))
         .toList();
