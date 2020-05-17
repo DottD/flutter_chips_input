@@ -78,6 +78,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
   Size size;
   TextOverflow textOverflow;
   bool _previousEnabled;
+  ScrollController _suggestionScrollController;
 
   ChipsInputState(TextOverflow textOverflow) {
     this.textOverflow = textOverflow;
@@ -96,6 +97,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
     _updateTextInputState();
     this._suggestionsBoxController = SuggestionsBoxController(context);
     this._suggestionsStreamController = StreamController<List<T>>.broadcast();
+    this._suggestionScrollController = ScrollController();
     _initFocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initOverlayEntry();
@@ -176,17 +178,22 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
                                 ? _suggestionBoxHeight - top
                                 : 400),
                       ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount: snapshot.data?.length ?? 0,
-                        itemBuilder: (BuildContext context, int index) {
-                          return widget.suggestionBuilder(
-                            context,
-                            this,
-                            _suggestions[index],
-                          );
-                        },
+                      child: Scrollbar(
+                        isAlwaysShown: true,
+                        controller: _suggestionScrollController,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          controller: _suggestionScrollController,
+                          itemCount: snapshot.data?.length ?? 0,
+                          itemBuilder: (BuildContext context, int index) {
+                            return widget.suggestionBuilder(
+                              context,
+                              this,
+                              _suggestions[index],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -206,6 +213,7 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
     _closeInputConnectionIfNeeded(false);
     _suggestionsStreamController.close();
     _suggestionsBoxController.close();
+    _suggestionScrollController.dispose();
     super.dispose();
   }
 
