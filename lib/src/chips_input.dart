@@ -91,6 +91,14 @@ class ChipsInputState<T> extends State<ChipsInput<T>>
   bool get _hasInputConnection => _connection != null && _connection.attached;
 
   @override
+  AutofillScope get currentAutofillScope => null;
+
+  @override
+  void performPrivateCommand(String action, Map<String, dynamic> data) {
+    //TODO
+  }
+
+  @override
   void initState() {
     super.initState();
     _chips.addAll(widget.initialValue);
